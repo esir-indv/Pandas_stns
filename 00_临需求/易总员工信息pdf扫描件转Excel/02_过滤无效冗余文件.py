@@ -118,3 +118,50 @@ for filename in os.listdir(source_folder):
         print(f'Deleted: {file_path}')
     else:
         print(f'File does not match pattern: {filename}')
+
+# 正则表达式模式，用于匹配以 1 到 800 之间的数字开头的文件名
+number_pattern = re.compile(r'^([1-7][0-9]{0,2}|800)(.*\.(xls|xlsx))$', re.IGNORECASE)
+
+# 正则表达式模式，用于匹配以年份开头的文件名（例如：2020年）
+year_pattern = re.compile(r'^\d{4}年.*\.(xls|xlsx)$', re.IGNORECASE)
+
+# 遍历文件夹中的所有文件
+for filename in os.listdir(source_folder):
+    if year_pattern.match(filename):
+        # 保留以年份开头的文件名
+        print(f'File is year-prefixed and retained: {filename}')
+    elif number_pattern.match(filename):
+        # 提取新文件名（去掉数字开头部分）
+        match = number_pattern.match(filename)
+        new_filename = match.group(2)
+        # 获取完整文件路径
+        old_file_path = os.path.join(source_folder, filename)
+        new_file_path = os.path.join(source_folder, new_filename)
+        # 重命名文件
+        os.rename(old_file_path, new_file_path)
+        print(f'Renamed: {filename} to {new_filename}')
+    else:
+        print(f'File does not match any pattern: {filename}')
+
+
+# 正则表达式模式，用于匹配以一个或两个数字开头的文件名
+number_pattern = re.compile(r'^\d{1,2}(.*\.(xls|xlsx))$', re.IGNORECASE)
+
+# 遍历文件夹中的所有文件
+for filename in os.listdir(source_folder):
+    # 检查是否匹配一个或两个数字开头的文件名
+    if number_pattern.match(filename):
+        base_name = filename.rsplit('.', 1)[0]  # 去掉扩展名
+        if len(base_name) < 8:
+            match = number_pattern.match(filename)
+            new_filename = match.group(1)
+            # 获取完整文件路径
+            old_file_path = os.path.join(source_folder, filename)
+            new_file_path = os.path.join(source_folder, new_filename)
+            # 重命名文件
+            os.rename(old_file_path, new_file_path)
+            print(f'Renamed: {filename} to {new_filename}')
+        else:
+            print(f'File does not need renaming (length >= 6): {filename}')
+    else:
+        print(f'File does not match any pattern: {filename}')
